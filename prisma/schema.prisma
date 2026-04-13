@@ -18,7 +18,7 @@ model TutorProfile {
   title           String      @db.VarChar(255)
   pricePerHour    Float
   experienceYears Int         @db.Integer
-  rating          Float
+  rating          Float?
   isAvailable     Boolean     @default(true)
   userId          String      @unique
   // user            User      @relation(fields: [userId], references: [id])
