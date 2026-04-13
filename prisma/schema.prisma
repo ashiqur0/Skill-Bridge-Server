@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model TutorProfile {
+  id              String      @id @default(uuid())
+  bio             String      @db.Text
+  title           String      @db.VarChar(255)
+  pricePerHour    Float
+  experienceYears Int         @db.Integer
+  rating          Float
+  isAvailable     Boolean     @default(true)
+  userId          String      @unique
+  // user            User      @relation(fields: [userId], references: [id])
+  sessions        Sessions[]
+  reviews         Review[]
+  bookings        Bookings?
+  categories      Categories?
+
+  @@index([userId])
+  @@map("tutor_profiles")
+}
+
+model Sessions {
+  id          String       @id @default(uuid())
+  scheduledAt DateTime     @db.Timestamp(6)
+  status      String       @db.VarChar(20)
+  tutorId     String       @db.VarChar(30)
+  tutor       TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId   String       @db.VarChar(30)
+  // student     User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@map("sessions")
+}
+
+model Review {
+  id        String       @id @default(uuid())
+  comment   String       @db.Text
+  rating    Int          @db.Integer
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  tutorId   String       @db.VarChar(30)
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId String       @db.VarChar(30)
+  // student   User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@map("reviews")
+}
+
+model Bookings {
+  id          String       @id @default(uuid())
+  scheduledAt DateTime     @db.Timestamp(6)
+  status      String       @db.VarChar(20)
+  tutorId     String       @unique @db.VarChar(30)
+  tutor       TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId   String       @db.VarChar(30)
+  // student     User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
+  @@map("bookings")
+}
+
+model Categories {
+  id             String       @id @default(uuid())
+  name           String       @db.VarChar(255)
+  tutorProfileId String       @unique @db.VarChar(30)
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id])
+
+  @@index([tutorProfileId])
+  @@map("categories")
+}
