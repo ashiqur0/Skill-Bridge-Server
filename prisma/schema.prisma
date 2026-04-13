@@ -26,16 +26,21 @@ model TutorProfile {
   reviews         Review[]
   bookings        Bookings?
   categories      Categories?
+
+  @@index([userId])
 }
 
 model Session {
   id          String       @id @default(uuid())
-  tutorId     String       @db.VarChar(30)
-  studentId   String       @db.VarChar(30)
   scheduledAt DateTime     @db.Timestamp(6)
   status      String       @db.VarChar(20)
+  tutorId     String       @db.VarChar(30)
   tutor       TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId   String       @db.VarChar(30)
   // student     User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
 }
 
 model Review {
@@ -48,6 +53,9 @@ model Review {
   tutor     TutorProfile @relation(fields: [tutorId], references: [id])
   studentId String       @db.VarChar(30)
   // student   User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
 }
 
 model Bookings {
@@ -58,6 +66,9 @@ model Bookings {
   tutor       TutorProfile @relation(fields: [tutorId], references: [id])
   studentId   String       @db.VarChar(30)
   // student     User         @relation(fields: [studentId], references: [id])
+
+  @@index([tutorId])
+  @@index([studentId])
 }
 
 model Categories {
@@ -65,4 +76,6 @@ model Categories {
   name           String       @db.VarChar(255)
   tutorProfileId String       @unique @db.VarChar(30)
   tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id])
+  
+  @@index([tutorProfileId])
 }
