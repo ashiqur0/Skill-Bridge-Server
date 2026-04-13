@@ -22,15 +22,16 @@ model TutorProfile {
   isAvailable     Boolean     @default(true)
   userId          String      @unique
   // user            User      @relation(fields: [userId], references: [id])
-  sessions        Session[]
+  sessions        Sessions[]
   reviews         Review[]
   bookings        Bookings?
   categories      Categories?
 
   @@index([userId])
+  @@map("tutor_profiles")
 }
 
-model Session {
+model Sessions {
   id          String       @id @default(uuid())
   scheduledAt DateTime     @db.Timestamp(6)
   status      String       @db.VarChar(20)
@@ -41,6 +42,7 @@ model Session {
 
   @@index([tutorId])
   @@index([studentId])
+  @@map("sessions")
 }
 
 model Review {
@@ -56,6 +58,7 @@ model Review {
 
   @@index([tutorId])
   @@index([studentId])
+  @@map("reviews")
 }
 
 model Bookings {
@@ -69,6 +72,7 @@ model Bookings {
 
   @@index([tutorId])
   @@index([studentId])
+  @@map("bookings")
 }
 
 model Categories {
@@ -78,4 +82,5 @@ model Categories {
   tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id])
   
   @@index([tutorProfileId])
+  @@map("categories")
 }
