@@ -11,3 +11,58 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model TutorProfile {
+  id              String      @id @default(uuid())
+  bio             String      @db.Text
+  title           String      @db.VarChar(255)
+  pricePerHour    Float
+  experienceYears Int         @db.Integer
+  rating          Float
+  isAvailable     Boolean     @default(true)
+  userId          String      @unique
+  // user            User      @relation(fields: [userId], references: [id])
+  sessions        Session[]
+  reviews         Review[]
+  bookings        Bookings?
+  categories      Categories?
+}
+
+model Session {
+  id          String       @id @default(uuid())
+  tutorId     String       @db.VarChar(30)
+  studentId   String       @db.VarChar(30)
+  scheduledAt DateTime     @db.Timestamp(6)
+  status      String       @db.VarChar(20)
+  tutor       TutorProfile @relation(fields: [tutorId], references: [id])
+  // student     User         @relation(fields: [studentId], references: [id])
+}
+
+model Review {
+  id        String       @id @default(uuid())
+  comment   String       @db.Text
+  rating    Int          @db.Integer
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  tutorId   String       @db.VarChar(30)
+  tutor     TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId String       @db.VarChar(30)
+  // student   User         @relation(fields: [studentId], references: [id])
+}
+
+model Bookings {
+  id          String       @id @default(uuid())
+  scheduledAt DateTime     @db.Timestamp(6)
+  status      String       @db.VarChar(20)
+  tutorId     String       @unique @db.VarChar(30)
+  tutor       TutorProfile @relation(fields: [tutorId], references: [id])
+  studentId   String       @db.VarChar(30)
+  // student     User         @relation(fields: [studentId], references: [id])
+}
+
+model Categories {
+  id             String       @id @default(uuid())
+  name           String       @db.VarChar(255)
+  tutorProfileId String       @unique @db.VarChar(30)
+  tutorProfile   TutorProfile @relation(fields: [tutorProfileId], references: [id])
+}
